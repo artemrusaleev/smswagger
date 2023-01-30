@@ -8,5 +8,6 @@ app.get("*", (req, res, next) => {
   next();
 });
 app.use("/api/basket", basket);
+app.use(express.static(__dirname, +"static"));
 
 app.listen(PORT, () => console.log(`Server is running in posrt ${PORT}`));
