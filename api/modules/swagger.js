@@ -10,8 +10,6 @@ const styles = fs.readFile(
   }
 );
 
-const options = {
-  customCss: styles,
-};
+const options = {};
 
 module.exports = swaggerUi.setup(swaggerDocument, options);
