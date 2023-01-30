@@ -4,8 +4,9 @@ const fs = require("fs");
 const styles = fs.readFile(
   "./node_modules/swagger-ui-dist/index.css",
   "utf8",
-  (err, data) => {
-    return data;
+  async (err, data) => {
+    await data;
+    return (options.customCss = data);
   }
 );
 
