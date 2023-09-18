@@ -1,0 +1,1274 @@
+swagger: '2.0'
+info:
+  version: 1.0.0
+  title: "Смартомато API Авторизация"
+paths:
+  /api/session:
+    post:
+      summary: "Создание новой сессии"
+      description: |
+        Исполнение методов API (за исключением публичных методов, работающих с корзиной заказа) в Смартомато происходит в рамках сессии. Создание сессии происходит от лица пользователя API (ApiUser). Конкретный ApiUser однозначно определяется парой логин-пароль (они же используются при инициации новой сессии) или ключом ApiKey. Кроме того, каждый ApiUser имеет привязанный аккаунт, который определяет множество действий в API, доступных данному пользователю.
+      parameters:
+        - name: login
+          in: query
+          description: "Логин пользователя"
+          required: true
+          type: string
+        - name: password
+          in: query
+          description: "Пароль пользователя"
+          required: true
+          type: string
+      responses:
+        200:
+          description: "Успешное создание сессии"
+          schema:
+            type: object
+            properties:
+              staff_members:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: integer
+                    role:
+                      type: string
+                    organization_id:
+                      type: integer
+                    restaurant_ids:
+                      type: array
+                      items:
+                        type: integer
+              api_user:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                  login:
+                    type: string
+                  name:
+                    type: string
+                  phone:
+                    type: string
+                  avatar:
+                    type: object
+                    properties:
+                      original:
+                        type: string
+                      small:
+                        type: string
+                      medium_square:
+                        type: string
+                      medium:
+                        type: string
+                  account:
+                    type: object
+                    properties:
+                      type:
+                        type: string
+                      id:
+                        type: integer
+              meta:
+                type: object
+                properties:
+                  token:
+                    type: string
+    get:
+      summary: "Получение состояния текущей сессии"
+      description: "Получает состояние текущей сессии."
+      responses:
+        200:
+          description: "Состояние текущей сессии"
+    delete:
+      summary: "Выход из текущей сессии"
+      description: "Выполняет выход из текущей сессии. Использованный ранее token становится неактуальным."
+      responses:
+        204:
+          description: "Выход успешно выполнен"
+  /api/organizations/{id}:
+    get:
+      summary: "Получение информации об организации"
+      description: "Возвращает информацию о заданной организации."
+      parameters:
+        - name: id
+          in: path
+          description: "Идентификатор организации"
+          required: true
+          type: integer
+      responses:
+        200:
+          description: "Информация об организации"
+          schema:
+            type: object
+            properties:
+              organization:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                  name:
+                    type: string
+                  host:
+                    type: string
+                  social_network:
+                    type: object
+                    properties:
+                      vk:
+                        type: string
+                      facebook:
+                        type: string
+                      twitter:
+                        type: string
+                      instagram:
+                        type: string
+                  about:
+                    type: string
+                  phone:
+                    type: string
+                  accept_cashless:
+                    type: boolean
+    put:
+      summary: "Обновление информации об организации"
+      description: "Обновляет данные организации."
+      parameters:
+        - name: id
+          in: path
+          description: "Идентификатор организации"
+          required: true
+          type: integer
+        - name: organization
+          in: body
+          description: "Данные для обновления организации"
+          required: true
+          schema:
+            type: object
+            properties:
+              name:
+                type: string
+              social_network:
+                type: object
+                properties:
+                  vk:
+                    type: string
+                  facebook:
+                    type: string
+                  twitter:
+                    type: string
+                  instagram:
+                    type: string
+              about:
+                type: string
+              phone:
+                type: string
+      responses:
+        200:
+          description: "Обновленная информация об организации"
+  /api/organizations:
+    get:
+      summary: "Список доступных организаций"
+      description: "Возвращает список организаций, к которым данный пользователь имеет доступ."
+      responses:
+        200:
+          description: "Список организаций"
+          schema:
+            type: array
+            items:
+              type: object
+              properties:
+                id:
+                  type: integer
+                name:
+                  type: string
+                host:
+                  type: string
+                social_network:
+                  type: object
+                  properties:
+                    vk:
+                      type: string
+                    facebook:
+                      type: string
+                    twitter:
+                      type: string
+                    instagram:
+                      type: string
+                about:
+                  type: string
+                phone:
+                  type: string
+                accept_cashless:
+                  type: boolean
+  /api/organizations/{id}/publish:
+    post:
+      summary: "Публикация меню организации"
+      description: "Публикует меню заданной организации."
+      parameters:
+        - name: id
+          in: path
+          description: "Идентификатор организации"
+          required: true
+          type: integer
+      responses:
+        200:
+          description: "Меню организации успешно опубликовано"
+    /api/restaurants/{id}:
+    get:
+      summary: "Получение информации о ресторане"
+      description: "Возвращает информацию о ресторане по идентификатору."
+      parameters:
+        - name: id
+          in: path
+          description: "Идентификатор ресторана"
+          required: true
+          type: integer
+      responses:
+        200:
+          description: "Информация о ресторане"
+          schema:
+            type: object
+            properties:
+              restaurants:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: integer
+                    name:
+                      type: string
+                    phone:
+                      type: string
+                    address:
+                      type: string
+                    organization_id:
+                      type: integer
+    put:
+      summary: "Обновление атрибутов ресторана"
+      description: "Обновляет атрибуты ресторана."
+      parameters:
+        - name: id
+          in: path
+          description: "Идентификатор ресторана"
+          required: true
+          type: integer
+        - name: restaurant
+          in: body
+          description: "Данные для обновления ресторана"
+          required: true
+          schema:
+            type: object
+            properties:
+              name:
+                type: string
+              phone:
+                type: string
+              address:
+                type: string
+      responses:
+        200:
+          description: "Обновленная информация о ресторане"
+  /api/restaurants:
+    get:
+      summary: "Список доступных ресторанов"
+      description: "Возвращает список доступных данному пользователю ресторанов. Возможна фильтрация ресторанов через параметр organization_id."
+      parameters:
+        - name: organization_id
+          in: query
+          description: "Идентификатор организации (для фильтрации)"
+          required: false
+          type: integer
+      responses:
+        200:
+          description: "Список ресторанов"
+          schema:
+            type: array
+            items:
+              type: object
+              properties:
+                id:
+                  type: integer
+                name:
+                  type: string
+                phone:
+                  type: string
+                address:
+                  type: string
+                organization_id:
+                  type: integer
+  /api/draft_categories/{id}:
+    get:
+      summary: "Получение информации о категории меню"
+      description: "Получает информацию о заданной категории."
+      parameters:
+        - name: id
+          in: path
+          description: "Идентификатор категории меню"
+          required: true
+          type: integer
+      responses:
+        200:
+          description: "Информация о категории меню"
+          schema:
+            type: object
+            properties:
+              draft_category:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                  name:
+                    type: string
+                  menu_order:
+                    type: integer
+                  photo:
+                    type: object
+                    properties:
+                      original:
+                        type: string
+                      small_square:
+                        type: string
+                      medium_square:
+                        type: string
+                      large:
+                        type: string
+                  draft_dish_ids:
+                    type: array
+                    items:
+                      type: integer
+                  organization_id:
+                    type: integer
+    put:
+      summary: "Обновление информации о категории меню"
+      description: "Обновляет поля заданной категории."
+      parameters:
+        - name: id
+          in: path
+          description: "Идентификатор категории меню"
+          required: true
+          type: integer
+        - name: draft_category
+          in: body
+          description: "Данные для обновления категории меню"
+          required: true
+          schema:
+            type: object
+            properties:
+              name:
+                type: string
+              menu_order:
+                type: integer
+              photo:
+                type: object
+                properties:
+                  original:
+                    type: string
+                  small_square:
+                    type: string
+                  medium_square:
+                    type: string
+                  large:
+                    type: string
+    delete:
+      summary: "Удаление категории меню"
+      description: "Удаляет категорию и все содержащиеся в ней блюда. Удаление категории с витрины произойдет после публикации меню."
+      parameters:
+        - name: id
+          in: path
+          description: "Идентификатор категории меню"
+          required: true
+          type: integer
+  /api/draft_categories/{id}/photo:
+    put:
+      summary: "Обновление фотографии категории меню"
+      description: "Обновляет фотографию категории меню."
+      parameters:
+        - name: id
+          in: path
+          description: "Идентификатор категории меню"
+          required: true
+          type: integer
+        - name: file
+          in: formData
+          description: "Файл с фотографией"
+          required: true
+          type: file
+  /api/draft_dishes/{id}:
+    get:
+      summary: "Получение информации о черновом блюде"
+      description: "Возвращает черновое блюдо по идентификатору."
+      parameters:
+        - name: id
+          in: path
+          description: "Идентификатор чернового блюда"
+          required: true
+          type: integer
+      responses:
+        200:
+          description: "Информация о черновом блюде"
+          schema:
+            type: object
+            properties:
+              draft_dish:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                  is_hidden:
+                    type: boolean
+                  name:
+                    type: string
+                  description:
+                    type: string
+                  menu_order:
+                    type: integer
+                  price:
+                    type: string
+                  photo:
+                    type: object
+                    properties:
+                      original:
+                        type: string
+                      small_square:
+                        type: string
+                      medium_square:
+                        type: string
+                      medium:
+                        type: string
+                      large:
+                        type: string
+                  weight:
+                    type: string
+                  ingredients:
+                    type: string
+                  is_next_day:
+                    type: boolean
+                  external_id:
+                    type: string
+                  options:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        items:
+                          type: array
+                          items:
+                            type: object
+                            properties:
+                              name:
+                                type: string
+                              price:
+                                type: string
+                        max:
+                          type: integer
+                        min:
+                          type: integer
+                        multiple:
+                          type: boolean
+                        name:
+                          type: string
+                  draft_category_id:
+                    type: integer
+                  organization_id:
+                    type: integer
+    put:
+      summary: "Изменение атрибутов чернового блюда"
+      description: "Изменяет атрибуты конкретного чернового блюда."
+      parameters:
+        - name: id
+          in: path
+          description: "Идентификатор чернового блюда"
+          required: true
+          type: integer
+        - name: draft_dish
+          in: body
+          description: "Данные для обновления чернового блюда"
+          required: true
+          schema:
+            type: object
+            properties:
+              is_hidden:
+                type: boolean
+              name:
+                type: string
+              description:
+                type: string
+              menu_order:
+                type: integer
+              price:
+                type: string
+              photo:
+                type: object
+                properties:
+                  original:
+                    type: string
+                  small_square:
+                    type: string
+                  medium_square:
+                    type: string
+                  medium:
+                    type: string
+                  large:
+                    type: string
+              weight:
+                type: string
+              ingredients:
+                type: string
+              is_next_day:
+                type: boolean
+              external_id:
+                type: string
+              options:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    items:
+                      type: array
+                      items:
+                        type: object
+                        properties:
+                          name:
+                            type: string
+                          price:
+                            type: string
+                    max:
+                      type: integer
+                    min:
+                      type: integer
+                    multiple:
+                      type: boolean
+                    name:
+                      type: string
+              draft_category_id:
+                type: integer
+    delete:
+      summary: "Удаление чернового блюда"
+      description: "Удаляет черновое блюдо. Удаление блюда с витрины произойдет после публикации."
+      parameters:
+        - name: id
+          in: path
+          description: "Идентификатор чернового блюда"
+          required: true
+          type: integer
+  /api/draft_dishes:
+    get:
+      summary: "Список доступных черновых блюд"
+      description: "Возвращает список всех черновиков блюд, к которым авторизованный пользователь имеет доступ. Доступны фильтры по следующим атрибутам: organization_id, draft_category_id."
+      parameters:
+        - name: organization_id
+          in: query
+          description: "Идентификатор организации (для фильтрации)"
+          required: false
+          type: integer
+        - name: draft_category_id
+          in: query
+          description: "Идентификатор категории (для фильтрации)"
+          required: false
+          type: integer
+      responses:
+        200:
+          description: "Список черновых блюд"
+          schema:
+            type: array
+            items:
+              type: object
+              properties:
+                id:
+                  type: integer
+                is_hidden:
+                  type: boolean
+                name:
+                  type: string
+                description:
+                  type: string
+                menu_order:
+                  type: integer
+                price:
+                  type: string
+                photo:
+                  type: object
+                  properties:
+                    original:
+                      type: string
+                    small_square:
+                      type: string
+                    medium_square:
+                      type: string
+                    medium:
+                      type: string
+                    large:
+                      type: string
+                weight:
+                  type: string
+                ingredients:
+                  type: string
+                is_next_day:
+                  type: boolean
+                external_id:
+                  type: string
+                options:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      items:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            name:
+                              type: string
+                            price:
+                              type: string
+                      max:
+                        type: integer
+                      min:
+                        type: integer
+                      multiple:
+                        type: boolean
+                      name:
+                        type: string
+                draft_category_id:
+                  type: integer
+                organization_id:
+                  type: integer
+    post:
+      summary: "Создание нового чернового блюда"
+      description: "Создает новое черновое блюдо. Поля draft_category_id, organization_id, price, name являются обязательными."
+      parameters:
+        - name: draft_dish
+          in: body
+          description: "Данные для создания нового чернового блюда"
+          required: true
+          schema:
+            type: object
+            properties:
+              draft_category_id:
+                type: integer
+              organization_id:
+                type: integer
+              price:
+                type: string
+              name:
+                type: string
+    put:
+      summary: "Обновление фотографии чернового блюда"
+      description: "Обновляет фотографию чернового блюда. Ожидает тип mutlipart/form-data с атрибутом file."
+      parameters:
+        - name: id
+          in: path
+          description: "Идентификатор чернового блюда"
+          required: true
+          type: integer
+        - name: file
+          in: formData
+          description: "Файл с фотографией блюда"
+          required: true
+          type: file
+  /api/delivery_zones/{id}:
+    get:
+      summary: "Получение информации о зоне доставки"
+      description: "Получение информации о заданной зоне доставки."
+      parameters:
+        - name: id
+          in: path
+          description: "Идентификатор зоны доставки"
+          required: true
+          type: integer
+      responses:
+        200:
+          description: "Информация о зоне доставки"
+          schema:
+            type: object
+            properties:
+              id:
+                type: integer
+              name:
+                type: string
+              delivery_time:
+                type: integer
+              price:
+                type: integer
+              timezone:
+                type: string
+              free_delivery_count:
+                type: integer
+              free_delivery_price:
+                type: integer
+              minimal_order_price:
+                type: integer
+              area:
+                type: string
+              restaurant_id:
+                type: integer
+              organization_id:
+                type: integer
+              timetables:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: integer
+                    open_at:
+                      type: string
+                    close_at:
+                      type: string
+                    day:
+                      type: integer
+                    date:
+                      type: string
+                    is_working:
+                      type: boolean
+    put:
+      summary: "Обновление зоны доставки"
+      description: "Обновление полей заданной зоны доставки."
+      parameters:
+        - name: id
+          in: path
+          description: "Идентификатор зоны доставки"
+          required: true
+          type: integer
+        - name: delivery_zone
+          in: body
+          description: "Данные для обновления зоны доставки"
+          required: true
+          schema:
+            type: object
+            properties:
+              name:
+                type: string
+              delivery_time:
+                type: integer
+              price:
+                type: integer
+              timezone:
+                type: string
+              free_delivery_count:
+                type: integer
+              free_delivery_price:
+                type: integer
+              minimal_order_price:
+                type: integer
+              area:
+                type: string
+              timetables:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: integer
+                    open_at:
+                      type: string
+                    close_at:
+                      type: string
+                    day:
+                      type: integer
+                    date:
+                      type: string
+                    is_working:
+                      type: boolean
+  /api/delivery_zones:
+    get:
+      summary: "Список доступных зон доставки"
+      description: "Запрос возвращает все зоны доставки организаций, к которым авторизованный пользователь имеет доступ. Доступна фильтрация через параметр organization_id."
+      parameters:
+        - name: organization_id
+          in: query
+          description: "Идентификатор организации (для фильтрации)"
+          required: false
+          type: integer
+      responses:
+        200:
+          description: "Список зон доставки"
+          schema:
+            type: array
+            items:
+              type: object
+              properties:
+                id:
+                  type: integer
+                name:
+                  type: string
+                delivery_time:
+                  type: integer
+                price:
+                  type: integer
+                timezone:
+                  type: string
+                free_delivery_count:
+                  type: integer
+                free_delivery_price:
+                  type: integer
+                minimal_order_price:
+                  type: integer
+                area:
+                  type: string
+                restaurant_id:
+                  type: integer
+                organization_id:
+                  type: integer
+                timetables:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      id:
+                        type: integer
+                      open_at:
+                        type: string
+                      close_at:
+                        type: string
+                      day:
+                        type: integer
+                      date:
+                        type: string
+                      is_working:
+                        type: boolean
+    post:
+      summary: "Создание новой зоны доставки"
+      description: "Создание новой зоны доставки. Обязательными являются параметры: organization_id, restaurant_id, name."
+      parameters:
+        - name: delivery_zone
+          in: body
+          description: "Данные для создания новой зоны доставки"
+          required: true
+          schema:
+            type: object
+            properties:
+              name:
+                type: string
+              delivery_time:
+                type: integer
+              price:
+                type: integer
+              timezone:
+                type: string
+              free_delivery_count:
+                type: integer
+              free_delivery_price:
+                type: integer
+              minimal_order_price:
+                type: integer
+              area:
+                type: string
+              restaurant_id:
+                type: integer
+              organization_id:
+                type: integer
+              timetables:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    open_at:
+                      type: string
+                    close_at:
+                      type: string
+                    day:
+                      type: integer
+                    date:
+                      type: string
+                    is_working:
+                      type: boolean
+  /api/orders/{id}:
+    get:
+      summary: "Получение информации о заказе"
+      description: "Получает информацию о заданном заказе по идентификатору."
+      parameters:
+        - name: id
+          in: path
+          description: "Идентификатор заказа"
+          required: true
+          type: integer
+      responses:
+        200:
+          description: "Информация о заказе"
+          schema:
+            type: object
+            properties:
+              restaurants:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: integer
+                    name:
+                      type: string
+                    phone:
+                      type: string
+                    is_running:
+                      type: boolean
+                    address:
+                      type: string
+                    is_delivery:
+                      type: boolean
+                    organization_id:
+                      type: integer
+                courier:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      id:
+                        type: integer
+                      name:
+                        type: string
+                      phone:
+                        type: string
+                      avatar:
+                        type: object
+                        properties:
+                          original:
+                            type: string
+                          small:
+                            type: string
+                          medium_square:
+                            type: string
+                          medium:
+                            type: string
+                      organization_id:
+                        type: integer
+                      last_known_position:
+                        type: object
+                      comment:
+                        type: string
+                      partnership_id:
+                        type: integer
+              payments:
+                type: array
+                items:
+                  type: object
+              order:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                  number:
+                    type: string
+                  delivery_time:
+                    type: integer
+                  transportation_time:
+                    type: integer
+                  cooking_time:
+                    type: integer
+                  contact_phone:
+                    type: string
+                  contact_name:
+                    type: string
+                  description:
+                    type: string
+                  change:
+                    type: integer
+                  status:
+                    type: string
+                  created_at:
+                    type: string
+                  courier_confirmed_at:
+                    type: string
+                  restaurant_confirmed_at:
+                    type: string
+                  delivery_asap:
+                    type: boolean
+                  delivery_at:
+                    type: string
+                  coordinates:
+                    type: string
+                  latitude:
+                    type: number
+                  longitude:
+                    type: number
+                  city:
+                    type: string
+                  address:
+                    type: string
+                  apartment:
+                    type: string
+                  staircase:
+                    type: string
+                  floor:
+                    type: string
+                  doorphone:
+                    type: string
+                  address_text:
+                    type: string
+                  pick_up_at:
+                    type: string
+                  payment_source:
+                    type: string
+                  final_sum:
+                    type: integer
+                  delivery_price:
+                    type: string
+                  total:
+                    type: string
+                  restaurant_id:
+                    type: integer
+                  client_id:
+                    type: integer
+                  courier_id:
+                    type: integer
+                  payment_id:
+                    type: integer
+                  links:
+                    type: object
+                    properties:
+                      buddies:
+                        type: string
+                      items:
+                        type: string
+    put:
+      summary: "Обновление заказа"
+      description: "Запрос необходим для редактирования следующих полей заказа: courier_id, status, contact_name, contact_phone, description, delivery_at, delivery_price."
+      parameters:
+        - name: id
+          in: path
+          description: "Идентификатор заказа"
+          required: true
+          type: integer
+        - name: order
+          in: body
+          description: "Данные для обновления заказа"
+          required: true
+          schema:
+            type: object
+  /api/orders:
+    get:
+      summary: "Список заказов"
+      description: "Получает список заказов, к которым пользователь имеет доступ."
+      parameters:
+        - name: page
+          in: query
+          description: "Номер страницы списка заказов"
+          required: false
+          type: integer
+        - name: per_page
+          in: query
+          description: "Количество заказов на странице"
+          required: false
+          type: integer
+        - name: restaurant_id
+          in: query
+          description: "Идентификаторы ресторанов (для фильтрации)"
+          required: false
+          type: array
+          items:
+            type: integer
+        - name: courier_id
+          in: query
+          description: "Идентификаторы курьеров (для фильтрации)"
+          required: false
+          type: array
+          items:
+            type: integer
+        - name: client_id
+          in: query
+          description: "Идентификаторы клиентов (для фильтрации)"
+          required: false
+          type: array
+          items:
+            type: integer
+        - name: status
+          in: query
+          description: "Статус заказов (для фильтрации)"
+          required: false
+          type: string
+        - name: sort_by
+          in: query
+          description: "Поле, по которому происходит сортировка"
+          required: false
+          type: string
+      responses:
+        200:
+          description: "Список заказов"
+          schema:
+            type: object
+            properties:
+              orders:
+                type: array
+                items:
+                  type: object
+              meta:
+                type: object
+                properties:
+                  page:
+                    type: integer
+                  page_count:
+                    type: integer
+                  per_page:
+                    type: integer
+                  count:
+                    type: integer
+  /api/orders/{id}/receipt{.pdf|.html}:
+    get:
+      summary: "Печатная выписка заказа"
+      description: "Возвращает печатную выписку заказа в заданном формате (HTML или PDF)."
+      parameters:
+        - name: id
+          in: path
+          description: "Идентификатор заказа"
+          required: true
+          type: integer
+        - name: format
+          in: path
+          description: "Формат выписки (pdf или html)"
+          required: true
+          type: string
+      responses:
+        200:
+          description: "Печатная выписка заказа"
+  /api/organizations/{id}/import/menu:
+    post:
+      summary: "Импорт меню"
+      description: "Импорт меню для ресторана с заменой текущего меню."
+      parameters:
+        - name: id
+          in: path
+          description: "Идентификатор организации"
+          required: true
+          type: integer
+        - name: menu_import_data
+          in: body
+          description: "Данные для импорта меню"
+          required: true
+          schema:
+            type: object
+            properties:
+              categories:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    name:
+                      type: string
+                    menu_order:
+                      type: integer
+                    remote_photo_url:
+                      type: string
+                    external_id:
+                      type: string
+                  required:
+                    - name
+
+              dishes:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    name:
+                      type: string
+                    price:
+                      type: number
+                    weight:
+                      type: number
+                    menu_order:
+                      type: integer
+                    description:
+                      type: string
+                    modifiers:
+                      type: array
+                      items:
+                        type: object
+                        properties:
+                          name:
+                            type: string
+                          items:
+                            type: array
+                            items:
+                              type: object
+                              properties:
+                                name:
+                                  type: string
+                                price:
+                                  type: number
+                              required:
+                                - name
+                            required:
+                              - items
+                          min:
+                            type: integer
+                          max:
+                            type: integer
+                          multiple:
+                            type: boolean
+                        required:
+                          - name
+                      required:
+                        - modifiers
+                    availability:
+                      type: array
+                      items:
+                        type: object
+                        properties:
+                          restaurant_id:
+                            type: integer
+                          status:
+                            type: string
+                        required:
+                          - restaurant_id
+                          - status
+                    remote_photo_url:
+                      type: string
+                    category_external_id:
+                      type: string
+                    category_name:
+                      type: string
+                    external_id:
+                      type: string
+                  required:
+                    - name
+              config:
+                type: object
+                properties:
+                  destroy_menu:
+                    type: boolean
+                    description: "Позволяет полностью заменить текущее меню импортируемым."
+                  publish_menu:
+                    type: boolean
+                    description: "Публикация меню сразу после завершения импорта."
+      responses:
+        200:
+          description: "Запрос на импорт успешно принят"
+          schema:
+            type: object
+            properties:
+              status:
+                type: string
+                description: "Статус запроса"
+              job_id:
+                type: string
+                description: "Идентификатор задачи импорта"
+  /api/organizations/{id}/import/menu:
+    get:
+      summary: "Статус импорта меню"
+      description: "Запрос на получение статуса текущей задачи импорта меню для организации."
+      parameters:
+        - name: id
+          in: path
+          description: "Идентификатор организации"
+          required: true
+          type: integer
+      responses:
+        200:
+          description: "Статус задачи импорта"
+          schema:
+            type: object
+            properties:
+              status:
+                type: string
+                description: "Статус задачи импорта"
+              job_id:
+                type: string
+                description: "Идентификатор задачи импорта"
+              job_status:
+                type: string
+                description: "Статус выполнения задачи импорта"
+              job_message:
+                type: string
+                description: "Сообщение о выполнении задачи импорта"
+              job_percent:
+                type: number
+                description: "Процент выполнения задачи импорта"
