@@ -10,8 +10,7 @@ app.get("*", (req, res, next) => {
   next();
 });
 app.use("/basket", swaggerUi.serveFiles(basket), swaggerUi.setup(basket));
-app.use("/basket/", express.static(path.join(__dirname, "static")));
 app.use("/", swaggerUi.serveFiles(main), swaggerUi.setup(main));
-app.use("/", express.static(path.join(__dirname, "static")));
+app.use(express.static("static"));
 
 app.listen(PORT, () => console.log(`Server is running in posrt ${PORT}`));
