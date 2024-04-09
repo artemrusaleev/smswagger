@@ -6,11 +6,19 @@ const swaggerUi = require("swagger-ui-express");
 const main = require("./main.json");
 const basket = require("./basket.json");
 
-app.get("*", (req, res, next) => {
-  next();
-});
-app.use("/basket", swaggerUi.serveFiles(basket), swaggerUi.setup(basket));
-app.use("/", swaggerUi.serveFiles(main), swaggerUi.setup(main));
-app.use(express.static("static"));
+const options = {
+  customCssUrl: "/static/swagger-ui.css",
+};
+app.use("/static", express.static(path.join(__dirname, "public")));
+app.use(
+  "/basket",
+  swaggerUi.serveFiles(basket, options),
+  swaggerUi.setup(basket, options)
+);
+app.use(
+  "/",
+  swaggerUi.serveFiles(main, options),
+  swaggerUi.setup(main, options)
+);
 
-app.listen(PORT, () => console.log(`Server is running in posrt ${PORT}`));
+app.listen(PORT, () => console.log(`Server is running in port ${PORT}`));
